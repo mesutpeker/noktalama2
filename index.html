@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Noktalama İşaretleri Alıştırması</title>
+    <style>
+        :root {
+            --primary-red: #ff3b3b;
+            --primary-dark: #2d3748;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .title {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .sentence {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin: 30px 0;
+            text-align: center;
+            color: var(--primary-dark);
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+            word-wrap: break-word;
+        }
+
+        .select-zone {
+            display: inline-flex;
+            min-width: 40px;
+            height: 45px;
+            vertical-align: middle;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.2em;
+            color: var(--primary-red);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 
+                0 2px 5px rgba(0, 0, 0, 0.05),
+                0 0 0 2px var(--primary-red);
+            transition: all 0.2s ease;
+        }
+
+        .select-zone:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 4px 12px rgba(255, 59, 59, 0.2),
+                0 0 0 2px var(--primary-red);
+        }
+
+        .select-zone.filled {
+            background: white;
+            box-shadow: 
+                0 2px 5px rgba(255, 59, 59, 0.1),
+                0 0 0 2px var(--primary-red);
+        }
+
+        .punctuation-selector {
+            position: fixed;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            width: auto;
+            min-width: 280px;
+        }
+
+        .punctuation-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            height: 45px;
+            width: 45px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 1.4em;
+            color: var(--primary-dark);
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.05),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .punctuation-option:hover {
+            transform: translateY(-1px);
+            background: #fff;
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+            box-shadow: 
+                0 3px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .punctuation-option:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.1),
+                inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--primary-red);
+            color: white;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(255, 59, 59, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 59, 59, 0.25);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(255, 59, 59, 0.2);
+        }
+
+        .feedback {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+            font-size: 1.2em;
+            font-weight: 600;
+            animation: slideUp 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #f0fff4;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .feedback.incorrect {
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            display: none;
+            z-index: 999;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobil için düzenlemeler */
+        @media (max-width: 480px) {
+            .punctuation-selector {
+                min-width: 220px;
+                padding: 6px;
+                gap: 4px;
+            }
+
+            .punctuation-option {
+                height: 38px;
+                width: 38px;
+                padding: 8px;
+                font-size: 1.2em;
+            }
+
+            .container { padding: 15px; }
+            .sentence { font-size: 1.2em; }
+            .select-zone {
+                min-width: 35px;
+                height: 40px;
+            }
+        }
+
+        /* Tablet ve büyük ekranlar için */
+        @media (min-width: 768px) {
+            .punctuation-selector {
+                min-width: 320px;
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .punctuation-option {
+                height: 50px;
+                width: 50px;
+                padding: 12px;
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <div id="overlay" class="overlay"></div>
+        <div class="container">
+            <h1 class="title">Noktalama İşaretleri Alıştırması</h1>
+    
+            <div class="sentence" id="sentence"></div>
+            
+            <div class="buttons">
+                <button id="checkButton">Kontrol Et</button>
+                <button id="nextButton" style="display: none;">Sıradaki Soru</button>
+                <button id="resetButton" style="display: none;">Tekrar Başla</button>
+            </div>
+    
+            <div class="feedback" id="feedback"></div>
+        </div>
+    
+        <script>
+            const questions = [
+                {
+                    text: "Ali okula gitti[1] ama ödevini unuttu[2] evine geri döndü[3]",
+                    answers: [".", ",", "."]
+                },
+                {
+                    text: "Eyvah[1] defterimi evde unuttum[2]",
+                    answers: ["!", "!"]
+                },
+                {
+                    text: "Market alışverişi için şunlar gerekiyor[1] ekmek[2] süt[3] yumurta[4] peynir[5]",
+                    answers: [":", ",", ",", ",", "."]
+                }
+            ];
+    
+            let currentQuestionIndex = 0;
+            let activeSelector = null;
+    
+            const punctuationOptions = [".", ",", ";", ":", "?", "!", "..."];
+            
+            const sentenceElement = document.getElementById('sentence');
+            const feedbackElement = document.getElementById('feedback');
+            const checkButton = document.getElementById('checkButton');
+            const nextButton = document.getElementById('nextButton');
+            const resetButton = document.getElementById('resetButton');
+            const overlay = document.getElementById('overlay');
+    
+            function hideAllSelectors() {
+                const selector = document.querySelector('.punctuation-selector');
+                if (selector) {
+                    selector.remove();
+                }
+                overlay.style.display = 'none';
+                activeSelector = null;
+            }
+    
+            function createAndShowSelector(zone) {
+                hideAllSelectors();
+    
+                const selector = document.createElement('div');
+                selector.className = 'punctuation-selector';
+                
+                punctuationOptions.forEach(punct => {
+                    const option = document.createElement('div');
+                    option.className = 'punctuation-option';
+                    option.textContent = punct;
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        zone.textContent = punct;
+                        zone.classList.add('filled');
+                        hideAllSelectors();
+                    });
+                    selector.appendChild(option);
+                });
+                
+                document.body.appendChild(selector);
+                
+                // Pozisyonu hesapla
+                const zoneRect = zone.getBoundingClientRect();
+                const selectorWidth = punctuationOptions.length * 51 + 16; // (45px width + 6px gap) * items + padding
+                
+                let left = Math.max(8, Math.min(
+                    window.innerWidth - selectorWidth - 8,
+                    zoneRect.left + (zoneRect.width - selectorWidth) / 2
+                ));
+    
+                selector.style.position = 'fixed';
+                selector.style.top = `${zoneRect.bottom + 5}px`;
+                selector.style.left = `${left}px`;
+                selector.style.transform = 'none';
+    
+                // Ekranın alt kısmında yer kalmazsa üstte göster
+                const selectorHeight = 61; // 45px height + padding + border
+                if (zoneRect.bottom + selectorHeight + 5 > window.innerHeight) {
+                    selector.style.top = `${zoneRect.top - selectorHeight - 5}px`;
+                }
+    
+                selector.style.display = 'grid';
+                activeSelector = selector;
+                overlay.style.display = 'block';
+            }
+    
+            function displayQuestion() {
+                const question = questions[currentQuestionIndex];
+                const text = question.text;
+                
+                const formattedText = text.replace(/\[\d+\]/g, (match) => {
+                    const index = match.match(/\d+/)[0];
+                    return `<span class="select-zone" data-index="${index-1}"> </span>`;
+                });
+    
+                sentenceElement.innerHTML = formattedText;
+    
+                const selectZones = document.querySelectorAll('.select-zone');
+                selectZones.forEach(zone => {
+                    zone.onclick = (e) => {
+                        e.stopPropagation();
+                        createAndShowSelector(zone);
+                    };
+                });
+            }
+    
+            function checkAnswer() {
+                const question = questions[currentQuestionIndex];
+                const selectZones = document.querySelectorAll('.select-zone');
+                let isCorrect = true;
+    
+                selectZones.forEach((zone, index) => {
+                    if (zone.textContent.trim() !== question.answers[index]) {
+                        isCorrect = false;
+                    }
+                });
+    
+                feedbackElement.style.display = 'block';
+                if (isCorrect) {
+                    feedbackElement.className = 'feedback correct';
+                    feedbackElement.textContent = 'Tümü doğru!';
+                } else {
+                    feedbackElement.className = 'feedback incorrect';
+                    feedbackElement.textContent = 'Yanlış cevaplar var!';
+                }
+    
+                checkButton.style.display = 'none';
+                if (currentQuestionIndex < questions.length - 1) {
+                    nextButton.style.display = 'block';
+                } else {
+                    resetButton.style.display = 'block';
+                }
+            }
+    
+            function nextQuestion() {
+                currentQuestionIndex++;
+                feedbackElement.style.display = 'none';
+                nextButton.style.display = 'none';
+                checkButton.style.display = 'block';
+                hideAllSelectors();
+                displayQuestion();
+            }
+    
+            function resetQuiz() {
+                currentQuestionIndex = 0;
+                feedbackElement.style.display = 'none';
+                resetButton.style.display = 'none';
+                checkButton.style.display = 'block';
+                hideAllSelectors();
+                displayQuestion();
+            }
+    
+            // Event Listeners
+            document.addEventListener('click', hideAllSelectors);
+            overlay.addEventListener('click', hideAllSelectors);
+            checkButton.addEventListener('click', checkAnswer);
+            nextButton.addEventListener('click', nextQuestion);
+            resetButton.addEventListener('click', resetQuiz);
+    
+            // Başlangıç
+            displayQuestion();
+        </script>
+    </body>
+    </html>
